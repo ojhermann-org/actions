@@ -24,6 +24,8 @@
             pkgs.statix
             pkgs.deadnix
             pkgs.shellcheck
+            pkgs.actionlint
+            pkgs.yamllint
           ];
           shellHook = ''
             if [ -f prek.toml ] && [ ! -f .git/hooks/pre-commit ]; then

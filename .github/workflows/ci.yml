@@ -12,13 +12,22 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@v13
       - run: nix develop -c prek run --all-files
 
+  workflow-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/actionlint@v1
+
   ci:
-    needs: [prek]
+    needs: [prek, workflow-lint]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Check all jobs passed
+        env:
+          FAILED: ${{ contains(needs.*.result, 'failure') }}
+          CANCELLED: ${{ contains(needs.*.result, 'cancelled') }}
         run: |
-          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" || "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+          if [[ "$FAILED" == "true" || "$CANCELLED" == "true" ]]; then
             exit 1
           fi
