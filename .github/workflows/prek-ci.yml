@@ -1,0 +1,30 @@
+name: prek-ci
+
+on:
+  workflow_call:
+    inputs:
+      nix-flake:
+        type: boolean
+        default: true
+        description: >-
+          If true (default), set up Nix + magic-nix-cache and run prek inside
+          `nix develop`. The consumer's flake devShell must include prek and
+          the binaries its prek.toml system hooks reference. If false, install
+          prek standalone via j178/prek-action — only works for prek.toml
+          with no system hooks.
+
+jobs:
+  prek:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - if: ${{ inputs.nix-flake }}
+        uses: DeterminateSystems/nix-installer-action@v21
+      - if: ${{ inputs.nix-flake }}
+        uses: DeterminateSystems/magic-nix-cache-action@v13
+      - if: ${{ inputs.nix-flake }}
+        run: nix develop -c prek run --all-files
+
+      - if: ${{ !inputs.nix-flake }}
+        uses: j178/prek-action@v2.0.0

@@ -4,7 +4,43 @@ Reusable GitHub Actions workflows for `ojhermann-org`.
 
 ## Workflow catalog
 
-_None yet — `prek-ci`, `python-ci`, and `nix-ci` land in subsequent PRs._
+### `prek-ci.yml`
+
+Runs `prek run --all-files` on the calling repo.
+
+For Nix-flake repos (default), prek runs inside `nix develop` so it picks up tool versions from the consumer's `flake.nix` devShell. `DeterminateSystems/magic-nix-cache-action` caches the devShell closure across CI runs.
+
+For non-Nix repos, set `nix-flake: false` to use `j178/prek-action` directly — but this only works if the `prek.toml` has no `language = "system"` hooks that need binaries on PATH.
+
+| Input | Type | Default | Description |
+|---|---|---|---|
+| `nix-flake` | bool | `true` | Run prek inside `nix develop`. Requires consumer's devShell to include `prek` and the binaries `prek.toml`'s system hooks reference. |
+
+Caller stub:
+
+```yaml
+jobs:
+  prek:
+    uses: ojhermann-org/actions/.github/workflows/prek-ci.yml@v1
+```
+
+For a non-Nix consumer:
+
+```yaml
+jobs:
+  prek:
+    uses: ojhermann-org/actions/.github/workflows/prek-ci.yml@v1
+    with:
+      nix-flake: false
+```
+
+### `python-ci.yml`
+
+_Lands in a follow-up PR._
+
+### `nix-ci.yml`
+
+_Lands in a follow-up PR._
 
 ## Version pinning
 
