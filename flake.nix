@@ -18,7 +18,18 @@
     {
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
-          packages = [ pkgs.prek ];
+          packages = [
+            pkgs.prek
+            pkgs.nixfmt
+            pkgs.statix
+            pkgs.deadnix
+            pkgs.shellcheck
+          ];
+          shellHook = ''
+            if [ -f prek.toml ] && [ ! -f .git/hooks/pre-commit ]; then
+              prek install
+            fi
+          '';
         };
       });
     };
