@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  prek:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@v21
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+
+      - name: Install lint tools
+        run: nix profile install nixpkgs#nixfmt nixpkgs#statix nixpkgs#deadnix nixpkgs#shellcheck
+
+      - uses: j178/prek-action@v2.0.0
+
+  ci:
+    needs: [prek]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check all jobs passed
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" || "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            exit 1
+          fi
