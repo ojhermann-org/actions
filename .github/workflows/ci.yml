@@ -18,7 +18,10 @@ jobs:
     if: always()
     steps:
       - name: Check all jobs passed
+        env:
+          FAILED: ${{ contains(needs.*.result, 'failure') }}
+          CANCELLED: ${{ contains(needs.*.result, 'cancelled') }}
         run: |
-          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" || "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+          if [[ "$FAILED" == "true" || "$CANCELLED" == "true" ]]; then
             exit 1
           fi
