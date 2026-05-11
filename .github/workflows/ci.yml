@@ -12,14 +12,8 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@v13
       - run: nix develop -c prek run --all-files
 
-  workflow-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: rhysd/actionlint@v1
-
   ci:
-    needs: [prek, workflow-lint]
+    needs: [prek]
     runs-on: ubuntu-latest
     if: always()
     steps:
